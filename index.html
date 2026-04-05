@@ -3,277 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyeksi Pendapatan</title>
+    <title>Kalkulator Proyeksi Pendapatan</title>
     <style>
-        /* Desain Mobile-First yang Modern */
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --surface: #ffffff;
-            --background: #F3F4F6;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --border: #E5E7EB;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--background);
-            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
             margin: 0;
-            padding: 16px;
         }
-
-        .card {
-            max-width: 600px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-            background: var(--surface);
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            padding: 30px;  
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-
-        h2 {
+        h1 {
             text-align: center;
-            margin-top: 0;
-            color: var(--primary);
+            color: #2c3e50;
+            margin-bottom: 30px;
         }
-
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap; /* Membantu tampilan di layar kecil */
+        }
         .form-group {
-            margin-bottom: 16px;
+            flex: 1;
+            min-width: 200px;
         }
-
         label {
             display: block;
             font-weight: 600;
             margin-bottom: 8px;
-            font-size: 14px;
+            color: #34495e;
         }
-
-        input {
+        input[type="number"], 
+        input[type="date"], 
+        select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
             box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus, select:focus {
             outline: none;
-            transition: border-color 0.2s;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
-
-        input:focus {
-            border-color: var(--primary);
-        }
-
         button {
             width: 100%;
-            background-color: var(--primary);
-            color: white;
             padding: 14px;
+            background-color: #2ecc71;
+            color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 8px;
-            transition: background-color 0.2s;
+            transition: background 0.3s;
+            margin-top: 10px;
         }
-
         button:hover {
-            background-color: var(--primary-hover);
+            background-color: #27ae60;
         }
-
-        .summary-card {
+        .summary {
+            background-color: #e8f8f5;
+            border-left: 5px solid #1abc9c;
+            padding: 15px 20px;
+            margin-top: 25px;
+            border-radius: 4px;
+            display: none;
+        }
+        .summary h3 {
+            margin-top: 0;
+            color: #16a085;
+            margin-bottom: 10px;
+        }
+        .summary p {
+            margin: 5px 0;
+        }
+        .table-responsive {
+            overflow-x: auto;
             margin-top: 20px;
-            padding: 16px;
-            background-color: #ECFCCB;
-            border: 1px solid #BEF264;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            display: none; /* Disembunyikan sampai tombol diklik */
-            color: #3F6212;
         }
-
-        .table-wrapper {
-            overflow-x: auto; /* Agar tabel bisa digeser ke samping di layar HP */
-            margin-top: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
-            min-width: 500px; /* Lebar minimum tabel */
+            margin-top: 10px;
         }
-
         th, td {
-            padding: 12px;
+            padding: 12px 15px;
+            border: 1px solid #ecf0f1;
             text-align: left;
-            border-bottom: 1px solid var(--border);
         }
-
         th {
-            background-color: #F9FAFB;
-            font-weight: 600;
-            color: var(--text-muted);
-            white-space: nowrap;
+            background-color: #34495e;
+            color: white;
+            position: sticky;
+            top: 0;
         }
-
-        /* Styling untuk baris hari libur */
-        .row-libur {
-            background-color: #FEE2E2;
-            color: #991B1B;
+        tr:nth-child(even) {
+            background-color: #f9fbfd;
         }
-        .row-libur td {
-            font-style: italic;
+        tr:hover {
+            background-color: #f1f4f8;
+        }
+        /* Style khusus untuk baris hari libur */
+        tr.libur {
+            background-color: #fdf2e9 !important;
+            color: #e67e22;
+        }
+        tr.libur:hover {
+            background-color: #fae5d3 !important;
         }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Kalkulator Proyeksi 10 Juta</h2>
+<div class="container">
+    <h1>📊 Kalkulator Proyeksi Pendapatan</h1>
     
-    <div class="form-group">
-        <label for="target">Target Pendapatan (Rp)</label>
-        <input type="number" id="target" value="10000000" step="100000">
+    <div class="form-row">
+        <div class="form-group">
+            <label for="dailyIncome">Pendapatan Per Hari Aktif (Rp):</label>
+            <input type="number" id="dailyIncome" placeholder="Contoh: 150000" required>
+        </div>
+        <div class="form-group">
+            <label for="startDate">Mulai Tanggal:</label>
+            <input type="date" id="startDate" required>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="pendapatan">Pendapatan Harian (Rp)</label>
-        <input type="number" id="pendapatan" placeholder="Contoh: 150000" required>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="workDaysOption">Opsi Hari Kerja:</label>
+            <select id="workDaysOption">
+                <option value="all">Gas Terus (Setiap Hari)</option>
+                <option value="sunday_off">Libur Minggu</option>
+                <option value="weekend_off">Libur Sabtu & Minggu</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="targetMode">Mode Proyeksi:</label>
+            <select id="targetMode" onchange="toggleMode()">
+                <option value="date">Berdasarkan Tanggal Selesai</option>
+                <option value="nominal">Berdasarkan Target Nominal</option>
+            </select>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="tanggalMulai">Tanggal Mulai</label>
-        <input type="date" id="tanggalMulai" required>
+    <div class="form-row" id="dynamicInputRow">
+        <div class="form-group" id="endDateGroup">
+            <label for="endDate">Sampai Tanggal:</label>
+            <input type="date" id="endDate">
+        </div>
+        
+        <div class="form-group" id="targetNominalGroup" style="display:none;">
+            <label for="targetNominal">Target Nominal (Rp):</label>
+            <input type="number" id="targetNominal" placeholder="Contoh: 5000000">
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="hariLibur">Hari Libur Seminggu (Berapa Hari?)</label>
-        <select id="hariLibur" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #E5E7EB; font-size: 16px; outline: none;">
-            <option value="0">Tidak ada libur (Gas terus)</option>
-            <option value="1">1 Hari (Minggu saja)</option>
-            <option value="2">2 Hari (Sabtu & Minggu)</option>
-        </select>
-    </div>
+    <button onclick="calculateProjection()">Hitung Proyeksi</button>
 
-    <button onclick="hitungProyeksi()">Buat Tabel Proyeksi</button>
+    <div id="summary" class="summary"></div>
 
-    <div id="summary" class="summary-card">
-        Target <span id="text-target"></span> akan tercapai dalam <span id="text-hari"></span> hari!
-    </div>
-
-    <div class="table-wrapper" id="area-tabel" style="display: none;">
-        <table>
+    <div class="table-responsive">
+        <table id="resultTable" style="display: none;">
             <thead>
                 <tr>
                     <th>Hari Ke-</th>
                     <th>Tanggal</th>
-                    <th>Status</th>
                     <th>Pendapatan Harian</th>
                     <th>Total Terkumpul</th>
                 </tr>
             </thead>
-            <tbody id="tabel-body">
+            <tbody>
                 </tbody>
         </table>
     </div>
 </div>
 
 <script>
-    // Set default tanggal mulai ke hari ini
-    document.getElementById('tanggalMulai').valueAsDate = new Date();
+    // Set tanggal hari ini sebagai default
+    document.getElementById('startDate').valueAsDate = new Date();
 
-    function formatRupiah(angka) {
-        return new Intl.NumberFormat('id-ID', { 
-            style: 'currency', 
-            currency: 'IDR', 
-            minimumFractionDigits: 0 
-        }).format(angka);
+    // Mengganti tampilan input berdasarkan mode
+    function toggleMode() {
+        const mode = document.getElementById('targetMode').value;
+        if (mode === 'date') {
+            document.getElementById('endDateGroup').style.display = 'block';
+            document.getElementById('targetNominalGroup').style.display = 'none';
+        } else {
+            document.getElementById('endDateGroup').style.display = 'none';
+            document.getElementById('targetNominalGroup').style.display = 'block';
+        }
     }
 
-    function hitungProyeksi() {
-        const target = parseFloat(document.getElementById('target').value);
-        const pendapatanHarian = parseFloat(document.getElementById('pendapatan').value);
-        const tanggalStr = document.getElementById('tanggalMulai').value;
-        const liburPilihan = parseInt(document.getElementById('hariLibur').value);
+    // Format Rupiah
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+    }
 
-        if (!pendapatanHarian || pendapatanHarian <= 0) {
-            alert("Mohon masukkan nominal pendapatan harian yang valid!");
+    // Cek apakah suatu tanggal adalah hari kerja berdasarkan opsi yang dipilih
+    function isWorkDay(date, option) {
+        const day = date.getDay(); // 0 = Minggu, 1 = Senin, ..., 6 = Sabtu
+        if (option === 'all') return true;
+        if (option === 'sunday_off' && day === 0) return false;
+        if (option === 'weekend_off' && (day === 0 || day === 6)) return false;
+        return true;
+    }
+
+    function calculateProjection() {
+        const dailyIncome = parseFloat(document.getElementById('dailyIncome').value);
+        const startDateInput = document.getElementById('startDate').value;
+        const mode = document.getElementById('targetMode').value;
+        const workDaysOption = document.getElementById('workDaysOption').value;
+
+        if (!startDateInput || isNaN(dailyIncome) || dailyIncome <= 0) {
+            alert('Mohon isi Pendapatan Per Hari dan Mulai Tanggal dengan nominal yang valid (> 0).');
             return;
         }
 
-        let tanggalSaatIni = new Date(tanggalStr);
-        let totalTerkumpul = 0;
-        let hariKe = 1;
-        let counterHariTotal = 0; // Untuk menghitung durasi kalender nyata
+        let currentDate = new Date(startDateInput);
+        currentDate.setHours(0,0,0,0);
+        
+        let currentTotal = 0;
+        let dayCount = 0;
+        let workingDaysCount = 0;
+        let tableData = [];
 
-        const tbody = document.getElementById('tabel-body');
-        tbody.innerHTML = ''; // Kosongkan tabel sebelum render ulang
+        if (mode === 'date') {
+            const endDateInput = document.getElementById('endDate').value;
+            if (!endDateInput) {
+                alert('Mohon isi Sampai Tanggal.');
+                return;
+            }
+            let endDate = new Date(endDateInput);
+            endDate.setHours(0,0,0,0);
 
-        // Looping sampai target terpenuhi
-        while (totalTerkumpul < target) {
-            let hariDalamMinggu = tanggalSaatIni.getDay(); // 0 = Minggu, 6 = Sabtu
-            let isLibur = false;
-
-            // Logika hari libur
-            if (liburPilihan === 1 && hariDalamMinggu === 0) {
-                isLibur = true; // Libur hari Minggu
-            } else if (liburPilihan === 2 && (hariDalamMinggu === 0 || hariDalamMinggu === 6)) {
-                isLibur = true; // Libur hari Sabtu & Minggu
+            if (endDate < currentDate) {
+                alert('Sampai Tanggal tidak boleh lebih awal dari Mulai Tanggal.');
+                return;
             }
 
-            let statusStr = "Kerja";
-            let incomeHariIni = 0;
-            let barisClass = "";
+            // Loop hari demi hari sampai tanggal selesai
+            while (currentDate <= endDate) {
+                dayCount++;
+                let workingToday = isWorkDay(currentDate, workDaysOption);
+                let incomeToday = 0;
 
-            if (isLibur) {
-                statusStr = "Libur";
-                barisClass = "row-libur";
-            } else {
-                incomeHariIni = pendapatanHarian;
-                totalTerkumpul += pendapatanHarian;
-                // Jika over target di hari terakhir, paskan angkanya (opsional, tapi dibiarkan total aktual saja)
+                if (workingToday) {
+                    incomeToday = dailyIncome;
+                    currentTotal += dailyIncome;
+                    workingDaysCount++;
+                }
+
+                tableData.push({
+                    day: dayCount,
+                    date: new Date(currentDate),
+                    income: incomeToday,
+                    total: currentTotal,
+                    isWorking: workingToday
+                });
+
+                // Lanjut ke hari berikutnya
+                currentDate.setDate(currentDate.getDate() + 1);
             }
 
-            // Render baris tabel
-            const tr = document.createElement('tr');
-            if (barisClass) tr.className = barisClass;
+        } else {
+            const targetNominal = parseFloat(document.getElementById('targetNominal').value);
+            if (isNaN(targetNominal) || targetNominal <= 0) {
+                alert('Mohon isi Target Nominal dengan benar.');
+                return;
+            }
 
-            const tanggalFormat = tanggalSaatIni.toLocaleDateString('id-ID', { 
-                weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' 
-            });
+            // Loop hari demi hari sampai target nominal tercapai
+            while (currentTotal < targetNominal) {
+                dayCount++;
+                let workingToday = isWorkDay(currentDate, workDaysOption);
+                let incomeToday = 0;
 
-            tr.innerHTML = `
-                <td>${hariKe}</td>
-                <td>${tanggalFormat}</td>
-                <td>${statusStr}</td>
-                <td>${isLibur ? '-' : formatRupiah(incomeHariIni)}</td>
-                <td><strong>${formatRupiah(totalTerkumpul)}</strong></td>
-            `;
-            tbody.appendChild(tr);
+                if (workingToday) {
+                    incomeToday = dailyIncome;
+                    currentTotal += dailyIncome;
+                    workingDaysCount++;
+                }
 
-            // Maju ke hari berikutnya
-            tanggalSaatIni.setDate(tanggalSaatIni.getDate() + 1);
-            hariKe++;
-            counterHariTotal++;
+                tableData.push({
+                    day: dayCount,
+                    date: new Date(currentDate),
+                    income: incomeToday,
+                    total: currentTotal,
+                    isWorking: workingToday
+                });
 
-            // Mencegah infinite loop (batas 50 tahun pencarian)
-            if (counterHariTotal > 18250) {
-                alert("Pendapatan harian terlalu kecil, proyeksi memakan waktu lebih dari 50 tahun.");
-                break;
+                currentDate.setDate(currentDate.getDate() + 1);
             }
         }
 
-        // Tampilkan kesimpulan dan tabel
-        document.getElementById('area-tabel').style.display = 'block';
-        document.getElementById('summary').style.display = 'block';
-        document.getElementById('text-target').innerText = formatRupiah(target);
-        document.getElementById('text-hari').innerText = counterHariTotal;
+        // --- Render Tabel dan Ringkasan ---
+        const tbody = document.querySelector('#resultTable tbody');
+        const resultTable = document.getElementById('resultTable');
+        const summaryDiv = document.getElementById('summary');
+        
+        tbody.innerHTML = '';
+
+        tableData.forEach(data => {
+            const row = document.createElement('tr');
+            
+            // Tambahkan class 'libur' jika hari itu bukan hari kerja
+            if (!data.isWorking) {
+                row.className = 'libur';
+            }
+
+            let dateString = data.date.toLocaleDateString('id-ID', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            // Teks pendapatan harian diganti 'Libur' jika tidak bekerja
+            let incomeText = data.isWorking ? formatRupiah(data.income) : '<em>Libur</em>';
+
+            row.innerHTML = `
+                <td>${data.day}</td>
+                <td>${dateString}</td>
+                <td>${incomeText}</td>
+                <td><strong>${formatRupiah(data.total)}</strong></td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        resultTable.style.display = 'table';
+        
+        // Ambil tanggal terakhir dari array data
+        const finalDate = tableData[tableData.length - 1].date;
+
+        summaryDiv.style.display = 'block';
+        summaryDiv.innerHTML = `
+            <h3>Ringkasan Proyeksi:</h3>
+            <p>⏳ Total Durasi: <strong>${dayCount} Hari</strong> (<em>Total Hari Aktif Kerja: ${workingDaysCount} Hari</em>)</p>
+            <p>📅 Tanggal Selesai/Pencapaian: <strong>${finalDate.toLocaleDateString('id-ID', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</strong></p>
+            <p>💰 Estimasi Total Pendapatan: <strong>${formatRupiah(currentTotal)}</strong></p>
+        `;
     }
 </script>
 
